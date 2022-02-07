@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Feature Engineering</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Feature Engineering</h1>
+
+
+
+<p>Automated feature engineering is a cornerstone of the package. Below are some of the techniques we use in multivariate machine learning models, and the outside packages that make it possible.</p>
+<div id="date-features" class="section level2">
+<h2>Date Features</h2>
+<p>The <a href="https://business-science.github.io/timetk/reference/tk_augment_timeseries.html">tk_augment_timeseries_signature</a> function from the timetk package easily extracts out various date features from the time stamp. The function doesn’t differentiate between date type, so features need to be removed depending on the date type. For example, features related to week and day for a monthly forecast are automatically removed.</p>
+<p>Fourier series are also added using the <a href="https://business-science.github.io/timetk/reference/tk_augment_fourier.html">tk_augment_fourier</a> function from timetk.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timetk)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>m4_monthly <span class="sc">%&gt;%</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  timetk<span class="sc">::</span><span class="fu">tk_augment_timeseries_signature</span>(date) <span class="sc">%&gt;%</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(id) <span class="sc">%&gt;%</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  timetk<span class="sc">::</span><span class="fu">tk_augment_fourier</span>(date, <span class="at">.periods =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">12</span>), <span class="at">.K =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,574 x 37</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    id    date       value index.num    diff  year year.iso  half quarter month</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt; &lt;date&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;    &lt;int&gt; &lt;int&gt;   &lt;int&gt; &lt;int&gt;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 M1    1976-06-01  8000 202435200      NA  1976     1976     1       2     6</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 M1    1976-07-01  8350 205027200 2592000  1976     1976     2       3     7</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 M1    1976-08-01  8570 207705600 2678400  1976     1976     2       3     8</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 M1    1976-09-01  7700 210384000 2678400  1976     1976     2       3     9</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 M1    1976-10-01  7080 212976000 2592000  1976     1976     2       4    10</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 M1    1976-11-01  6520 215654400 2678400  1976     1976     2       4    11</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 M1    1976-12-01  6070 218246400 2592000  1976     1976     2       4    12</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 M1    1977-01-01  6650 220924800 2678400  1977     1976     1       1     1</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 M1    1977-02-01  6830 223603200 2678400  1977     1977     1       1     2</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 M1    1977-03-01  5710 226022400 2419200  1977     1977     1       1     3</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ... with 1,564 more rows, and 27 more variables: month.xts &lt;int&gt;,</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   month.lbl &lt;ord&gt;, day &lt;int&gt;, hour &lt;int&gt;, minute &lt;int&gt;, second &lt;int&gt;,</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   hour12 &lt;int&gt;, am.pm &lt;int&gt;, wday &lt;int&gt;, wday.xts &lt;int&gt;, wday.lbl &lt;ord&gt;,</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   mday &lt;int&gt;, qday &lt;int&gt;, yday &lt;int&gt;, mweek &lt;int&gt;, week &lt;int&gt;,</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   week.iso &lt;int&gt;, week2 &lt;int&gt;, week3 &lt;int&gt;, week4 &lt;int&gt;, mday7 &lt;int&gt;,</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   date_sin3_K1 &lt;dbl&gt;, date_cos3_K1 &lt;dbl&gt;, date_sin6_K1 &lt;dbl&gt;,</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   date_cos6_K1 &lt;dbl&gt;, date_sin12_K1 &lt;dbl&gt;, date_cos12_K1 &lt;dbl&gt;</span></span></code></pre></div>
+</div>
+<div id="missing-data-and-outliers" class="section level2">
+<h2>Missing Data and Outliers</h2>
+<p>Missing data is filled in using the <a href="https://business-science.github.io/timetk/reference/pad_by_time.html">pad_by_time</a> function from the timetk package. First, each time series is grouped and padded using their existing start and end dates. Missing values are padded using NA. Then the same process is ran again, this time padding data from the “hist_start_date” input from the “forecast_time_series” finnts function, with missing values being filled in with zero. This ensures that missing data before a time series starts are all zeroes, but missing periods within the existing time series data are identified to be inputted with new values in the next step.</p>
+<p>After missing data is padded, the <a href="https://business-science.github.io/timetk/reference/ts_impute_vec.html">ts_impute_vec</a> function from the timetk package is called to impute any NA values. This only happens if the “clean_missing_values” input from the “forecast_time_series” finnts function is set to TRUE, otherwise NA values are replaced with zero.</p>
+<p>Outliers are handled using the <a href="https://business-science.github.io/timetk/reference/ts_clean_vec.html">ts_clean_vec</a> function from the timetk package. Outliers are replaced after the missing data process, and only runs if the “clean_outliers” input from the “forecast_time_series” finnts function is set to TRUE.</p>
+<p><strong>Important Note: </strong> Missing values and outliers are replaced for the target variable and any numeric external regressors.</p>
+</div>
+<div id="lags-rolling-windows-and-polynomial-transformations" class="section level2">
+<h2>Lags, Rolling Windows, and Polynomial Transformations</h2>
+<p>Lags of the target variable and external regressors are created using the <a href="https://business-science.github.io/timetk/reference/tk_augment_lags.html">tk_augment_lags</a> function from timetk.</p>
+<p>Rolling window calculations of the target variable are created using the <a href="https://business-science.github.io/timetk/reference/tk_augment_slidify.html">tk_augment_slidify</a> function from timetk. The below calculations are created over various window values.</p>
+<ul>
+<li>sum</li>
+<li>mean</li>
+<li>standard deviation</li>
+</ul>
+<p>Polynomial transformations are created for the target variable, and lags are then created on top of them. The below transformations are created.</p>
+<ul>
+<li>squared</li>
+<li>cubed</li>
+<li>log</li>
+</ul>
+</div>
+<div id="custom-approaches" class="section level2">
+<h2>Custom Approaches</h2>
+<p>In addition to the standard approaches above, finnts also does two different ways of preparing features to be created for a multivariate machine learning model.</p>
+<p>In the first recipe, referred to as “R1” in default finnts models, all of the engineered target and external regressor features are used but cannot be less than the forecast horizon. For example, a monthly data set with a forecast horizon of 3, finnts will take engineered features like lags and rolling window features but only use those one that are for periods equal to or greater than 3. Recursive forecasting is not supported in default finnts multivariate machine learning models, since feeding forecast outputs as features to create another forecast adds complex layers of uncertainty that can easily spiral out of control and produce poor forecasts. NA values created by generating lag features are filled “up”. This results in the first initial periods of a time series having some data leakage but the effect should be small if the time series is long enough.</p>
+<pre><code>#&gt; # A tibble: 10 x 9
+#&gt;    Combo     Date       Target Target_lag3 Target_lag6 Target_lag3_roll3_sum
+#&gt;    &lt;chr&gt;     &lt;date&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;                 &lt;dbl&gt;
+#&gt;  1 Country_1 2020-01-01     10          10          10                    30
+#&gt;  2 Country_1 2020-02-01     20          10          10                    30
+#&gt;  3 Country_1 2020-03-01     30          10          10                    30
+#&gt;  4 Country_1 2020-04-01     40          10          10                    30
+#&gt;  5 Country_1 2020-05-01     50          20          10                    40
+#&gt;  6 Country_1 2020-06-01     60          30          10                    60
+#&gt;  7 Country_1 2020-07-01     70          40          10                    90
+#&gt;  8 Country_1 2020-08-01     80          50          20                   120
+#&gt;  9 Country_1 2020-09-01     90          60          30                   150
+#&gt; 10 Country_1 2020-10-01    100          70          40                   180
+#&gt; # ... with 3 more variables: Target_lag6_roll3_sum &lt;dbl&gt;,
+#&gt; #   Target_lag3_roll6_sum &lt;dbl&gt;, Target_lag6_roll6_sum &lt;dbl&gt;</code></pre>
+<p>The second recipe is referred to as “R2” in default finnts models. It takes a very different approach than the “R1” recipe. For a 3 month forecast horizon on a monthly dataset, target and rolling window features are created by depend on the horizon period. They are also constrained to be equal or less than the forecast horizon. In the below example, “Origin” and “Horizon” features are created for each time period. This results in duplicating rows in the original data set to create new features that are now specific to each horizon period. This helps the default finnts models find new unique relationships to model, when compared to a more formal approach in “R1”. NA values created by generating lag features are filled “up”, but we left that out in the below example to better understand how the horizon specific features are created.</p>
+<pre><code>#&gt; # A tibble: 18 x 8
+#&gt;    Combo    Date       Origin Horizon Target Target_Lag1 Target_Lag2 Target_Lag3
+#&gt;    &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+#&gt;  1 Country~ 2020-01-01      0       1     10          NA          NA          NA
+#&gt;  2 Country~ 2020-01-01     -1       2     10          NA          NA          NA
+#&gt;  3 Country~ 2020-01-01     -2       3     10          NA          NA          NA
+#&gt;  4 Country~ 2020-02-01      1       1     20          10          NA          NA
+#&gt;  5 Country~ 2020-02-01      0       2     20          NA          NA          NA
+#&gt;  6 Country~ 2020-02-01     -1       3     20          NA          NA          NA
+#&gt;  7 Country~ 2020-03-01      2       1     30          20          10          NA
+#&gt;  8 Country~ 2020-03-01      1       2     30          10          NA          NA
+#&gt;  9 Country~ 2020-03-01      0       3     30          NA          NA          NA
+#&gt; 10 Country~ 2021-04-01      3       1     40          30          20          10
+#&gt; 11 Country~ 2021-04-01      2       2     40          20          10          NA
+#&gt; 12 Country~ 2021-04-01      1       3     40          10          NA          NA
+#&gt; 13 Country~ 2020-05-01      4       1     50          40          30          20
+#&gt; 14 Country~ 2020-05-01      3       2     50          30          20          10
+#&gt; 15 Country~ 2020-05-01      2       3     50          20          10          NA
+#&gt; 16 Country~ 2021-06-01      5       1     60          50          40          30
+#&gt; 17 Country~ 2021-06-01      4       2     60          40          30          20
+#&gt; 18 Country~ 2021-06-01      3       3     60          30          20          10</code></pre>
+</div>
+<div id="model-specific-feature-engineering" class="section level2">
+<h2>Model Specific Feature Engineering</h2>
+<p>In addition to everything called out above, some models have their own specific transformations that need to be applied before training a model. For example, the “glmnet” model needs to transform categorical variables into continuous variables and center/scale the data before training. Each default model in finnts has their own preprocessing steps that ensure the data fed into the model has the best chance of producing a high quality forecast. The <a href="https://recipes.tidymodels.org/">recipes</a> package is used to easily apply various preprocessing transformations needed before training a model.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
