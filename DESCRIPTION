@@ -1,6 +1,6 @@
 Package: finnts
 Title: Microsoft Finance Time Series Forecasting Framework
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     c(person(given = "Mike",
            family = "Tokic",
@@ -34,9 +34,9 @@ Config/testthat/edition: 3
 Depends: R (>= 3.6.0), modeltime
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-02-04 04:20:29 UTC; mitokic
+Packaged: 2022-03-28 22:13:46 UTC; mitokic
 Author: Mike Tokic [aut, cre] (<https://orcid.org/0000-0002-7630-7055>),
   Aadharsh Kannan [aut] (<https://orcid.org/0000-0002-6475-8211>)
 Maintainer: Mike Tokic <mftokic@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-02-07 09:40:02 UTC
+Date/Publication: 2022-03-28 22:40:02 UTC
