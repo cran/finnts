@@ -1,6 +1,6 @@
 Package: finnts
 Title: Microsoft Finance Time Series Forecasting Framework
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
     c(person(given = "Mike",
            family = "Tokic",
@@ -29,14 +29,14 @@ Imports: cli, Cubist, dials, doParallel, dplyr, earth, foreach,
         methods, modeltime.gluonts, modeltime.resample, parallel,
         parsnip, plyr, purrr, recipes, rsample, rules, stringr, tibble,
         tidyr, tidyselect, timetk, tune, workflows
-Suggests: knitr, reactable, rmarkdown, testthat (>= 3.0.0)
+Suggests: knitr, reactable, rmarkdown, sparklyr, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: R (>= 3.6.0), modeltime
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-03-28 22:13:46 UTC; mitokic
+Packaged: 2022-07-14 15:23:20 UTC; mitokic
 Author: Mike Tokic [aut, cre] (<https://orcid.org/0000-0002-7630-7055>),
   Aadharsh Kannan [aut] (<https://orcid.org/0000-0002-6475-8211>)
 Maintainer: Mike Tokic <mftokic@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-03-28 22:40:02 UTC
+Date/Publication: 2022-07-14 15:40:05 UTC

@@ -7,6 +7,34 @@ knitr::opts_chunk$set(
 ## ---- message = FALSE, eval = FALSE-------------------------------------------
 #  # load CRAN libraries
 #  library(finnts)
+#  library(sparklyr)
+#  
+#  install.packages("qs")
+#  library(qs)
+#  
+#  # connect to spark cluster
+#  options(sparklyr.log.console = TRUE)
+#  options(sparklyr.spark_apply.serializer = "qs") # uses the qs package to improve data serialization before sending to spark cluster
+#  
+#  sc <- sparklyr::spark_connect(method = "databricks")
+#  
+#  # call Finn with spark parallel processing
+#  hist_data <- timetk::m4_monthly %>%
+#    dplyr::rename(Date = date) %>%
+#    dplyr::mutate(id = as.character(id))
+#  
+#  finn_output <- finnts::forecast_time_series(
+#    input_data = hist_data,
+#    combo_variables = c("id"),
+#    target_variable = "value",
+#    date_type = "month",
+#    forecast_horizon = 3,
+#    parallel_processing = "spark"
+#  )
+
+## ---- message = FALSE, eval = FALSE-------------------------------------------
+#  # load CRAN libraries
+#  library(finnts)
 #  library(devtools)
 #  
 #  # load GitHub libraries
@@ -82,5 +110,4 @@ knitr::opts_chunk$set(
 #  
 #  # optional code to delete compute cluster
 #  parallel::stopCluster(cluster)
-#  
 
