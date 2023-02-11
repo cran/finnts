@@ -234,7 +234,7 @@ forecast_time_series <- function(input_data,
   xregs_future_values_tbl <- data_tbl %>%
     dplyr::select(Combo, 
                   Date, 
-                  xregs_future_values_list) %>%
+                  dplyr::all_of(xregs_future_values_list)) %>%
     get_xregs_future_values_tbl(forecast_approach)
   
   external_regressors <- external_regressors %>%
@@ -631,6 +631,8 @@ forecast_time_series <- function(input_data,
       data.frame()
     
     #reconcile forecasts
+    residual_multiplier <- 10 # shrink extra large residuals to prevent recon issues
+    
     for(value in unique(model_test_date$Model_Test_Date)) {
 
       set.seed(seed)
@@ -640,7 +642,7 @@ forecast_time_series <- function(input_data,
           
           model <- strsplit(value, "---")[[1]][1]
           test_date <- strsplit(value, "---")[[1]][2]
-          
+
           temp <- combined_fcst %>%
             dplyr::filter(Model == model,
                           .id == test_date) %>%
@@ -656,9 +658,10 @@ forecast_time_series <- function(input_data,
           
           temp_residuals <- back_test_unreconciled %>%
             dplyr::filter(Model == model, 
-                          Date <= max(Date)) %>% #only keep residuals that are equal or less than the forecast period
-            dplyr::mutate(Residual = Target - FCST) %>%
-            dplyr::select(-FCST, -Target) %>%
+                          Date <= max(Date)) %>% # only keep residuals that are equal or less than the forecast period
+            dplyr::mutate(FCST_Adj = ifelse((abs(Target) + 1)*residual_multiplier < abs(FCST), (Target+1)*residual_multiplier, FCST), # prevent hts recon issues
+                          Residual = Target - FCST_Adj) %>%
+            dplyr::select(-FCST, -Target, -FCST_Adj) %>%
             tidyr::pivot_wider(names_from = Combo, values_from = Residual) %>%
             dplyr::select(colnames(hts_gts_df), -Date) %>%
             as.matrix()
@@ -682,8 +685,17 @@ forecast_time_series <- function(input_data,
           
         },
         error = function(e){ 
-          print(e)
-          print('skipping')
+          
+          if(model == "Best-Model") {
+            print(e)
+            stop("'Best-Model' forecast could not be reconciled.", 
+                 call. = FALSE)
+          } else {
+            print(e)
+            print(model)
+            print(test_date)
+            print('skipping')
+          }
         }
       )
     }
@@ -729,7 +741,7 @@ forecast_time_series <- function(input_data,
                         lo.80 = Target, 
                         hi.80 = Target, 
                         hi.95 = Target) %>%
-          dplyr::select(Combo, combo_variables, Date, Model, Target, lo.95, lo.80, hi.80, hi.95) %>%
+          dplyr::select(Combo, dplyr::all_of(combo_variables), Date, Model, Target, lo.95, lo.80, hi.80, hi.95) %>%
           dplyr::filter(Date <= hist_end_date)
       ) %>%
       dplyr::arrange(Date, Combo, Model) %>%
