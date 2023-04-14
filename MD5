@@ -1,7 +1,7 @@
-e9b09c30ad7db5a6ba2d0af6bff6cb16 *DESCRIPTION
+c2fcc2bb16a9aebe9415577b217bf6d2 *DESCRIPTION
 47daa2f0395cbf1a583e857133802618 *LICENSE
 873f58fa88a1bd8c9794db44cf32314e *NAMESPACE
-f27b1881efffe3c99b92cf50f83448cc *NEWS.md
+754aa1ec9df69ec9d886da28cb835844 *NEWS.md
 136a34956580af9ff71e42f08ff787b0 *R/azure_parallel.R
 c7fed3bfb9d1bfc9df502c191405fd83 *R/configure_forecast_run.R
 7a4cdd772deb0c5cedfc66593c9b1fdc *R/forecast_models.R
@@ -36,7 +36,7 @@ a75bc956bf0f08566502bc14477ce41e *inst/doc/hierarchical-forecasting.R
 357a934f9d40bbb4a72be8ea9fa10d43 *inst/doc/hierarchical-forecasting.html
 011be30d517a24286ed181bfee371149 *inst/doc/models-used-in-finnts.R
 f0b39c9629d3317aa435ff3d8a7d84bb *inst/doc/models-used-in-finnts.Rmd
-9b010bdfb1154c1343025c1c8d3c070d *inst/doc/models-used-in-finnts.html
+c5f607ecc86dd5838c461378e93893a2 *inst/doc/models-used-in-finnts.html
 20391ef8bf18e6dd4ee62c68d7996fbf *inst/doc/parallel-processing.R
 f05a862e912cdf1f46bf469e3ed9efa4 *inst/doc/parallel-processing.Rmd
 5e6f9950a635e07e137186f568998771 *inst/doc/parallel-processing.html
