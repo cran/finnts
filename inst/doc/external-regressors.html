@@ -246,7 +246,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 <div id="historical-values-only" class="section level3">
 <h3>Historical Values Only</h3>
-<p>If you have an external regressor, with just their historical values,
+<p>If you have an external regressor with just their historical values,
 finnts will only use lags of those values when creating features to use
 in a model. That fixes the need to know or predict what these values
 should be in the future. Forecasting these values into the future,
@@ -255,7 +255,7 @@ chain forecasting regressors to then forecast the final target variable,
 only adds additional layers of uncertainty with the final future
 forecast. Using forecasts as inputs to another forecast can get out of
 hand quick, and is something we try to avoid within finnts.</p>
-<p><strong>Note: </strong> This only works for continuous (numeric)
+<p><strong>Note:</strong> This only works for continuous (numeric)
 external regressors.</p>
 </div>
 <div id="historical-and-future-values" class="section level3">
@@ -265,12 +265,12 @@ future values, finnts will then use both current (t-0) and lag (t-n)
 values when creating features to use in a model. This is required for
 categorical regressors, but optional for continuous (numeric)
 regressors.</p>
-<p><strong>Note: </strong> Future values of external regressors need to
+<p><strong>Note:</strong> Future values of external regressors need to
 be provided for the entire forecast horizon. Current (t-0) values of
 these regressors will also be used as features during the back testing
 process.</p>
 <p>Below is an example of how you can set up your input_data to leverage
-future values of external regressors</p>
+future values of external regressors.</p>
 <ul>
 <li>monthly date type</li>
 <li>forecast horizon of 3</li>

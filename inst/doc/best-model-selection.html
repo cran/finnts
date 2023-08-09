@@ -239,7 +239,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>The “Best Model” you see in both the back testing and future forecast
+<p>The “Best-Model” you see in both the back testing and future forecast
 outputs are chosen based on what had the best accuracy over the back
 testing process. After all individual, ensemble, and average model
 forecast are created for both back testing and the future forecast, a
@@ -280,14 +280,10 @@ have larger target values then ones further into the past. Another way
 of putting more weight on more recent observations is how Finn overlaps
 its back testing scenarios. This means the most recent observations are
 tested for accuracy in different forecast horizons (H=1, H=2, etc). More
-info on this in the quick start guide.</p>
-<p>Some might think why not just use root mean squared error (RMSE)?
-This would have similar results to weighted MAPE, but make it harder to
-non-technical users of the forecast understand accuracy. Only showing
-MAPE to users allows them to comprehend accuracy based on their current
-latticework of mental models with similar metrics like variance to
-forecast or budget they might already be using in financial
-reporting.</p>
+info on this in the back testing vignette.</p>
+<p>User of Finn can also take the Finn outputs, create their own
+accuracy metrics, and choose their own best models since all model
+results are written to disk.</p>
 
 
 

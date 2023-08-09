@@ -335,196 +335,103 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="local-machine" class="section level2">
 <h2>Local Machine</h2>
-<p>When the “parallel_processing” input within “forecast_time_series” is
-set to “local_machine”, each time series (including training models on
-the entire data set) is ran in parallel on the users local machine. Each
-time series will run on a separate core of the machine. Hyperparameter
-tuning, model refitting, and model averaging will be ran sequentially,
-which cannot be done in parallel since a parallel process is already
-running on the machine for each time series. This works well for data
-that contains many time series where you might only want to run a few
-simpler models, and in scenarios where cloud computing is not
-available.</p>
-<p>If “parallel_processing” is set to NULL and “run_model_parallel” is
-set to TRUE within the “forecast_time_series” function, then each time
-series is ran sequentially but the hyperparameter tuning, model
-refitting, and model averaging is ran in parallel. This works great for
-data that has a limited number of time series where you want to run a
-lot of back testing and build dozens of models within Finn.</p>
+<p>When <code>parallel_processing</code> within
+<code>forecast_time_series()</code> is set to “local_machine”, each time
+series (including training models on the entire data set) is ran in
+parallel on the users local machine. Each time series will run on a
+separate core of the machine. Hyperparameter tuning, model refitting,
+and model averaging will be ran sequentially, which cannot be done in
+parallel since a parallel process is already running on the machine for
+each time series. This works well for data that contains many time
+series where you might only want to run a few simpler models, and in
+scenarios where cloud computing is not available.</p>
+<p>If <code>parallel_processing</code> is set to NULL and
+<code>inner_parallel</code> is set to TRUE within
+<code>forecast_time_series</code>, then each time series is ran
+sequentially but the hyperparameter tuning, model refitting, and model
+averaging is ran in parallel. This works great for data that has a
+limited number of time series where you want to run a lot of back
+testing and build dozens of models within Finn.</p>
 </div>
 <div id="within-azure-using-spark" class="section level2">
 <h2>Within Azure using Spark</h2>
 <p>To leverage the full power of Finn, running within Azure is the best
 choice in building production ready forecasts that can easily scale. The
-most efficient way to run Finn is to set “parallel_processing” to
-“spark” within the “forecast_time_series” function. This will run each
-time series in parallel across a spark compute cluster.</p>
+most efficient way to run Finn is to set
+<code>parallel_processing</code> to “spark” within
+<code>forecast_time_series()</code>. This will run each time series in
+parallel across a spark compute cluster.</p>
 <p><a href="https://spark.rstudio.com/">Sparklyr</a> is a great R
 package that allows you to run R code across a spark cluster. A user
 simply has to connect to a spark cluster then run Finn. Below is an
 example on how you can run Finn using <a href="https://docs.microsoft.com/en-us/azure/databricks/spark/latest/sparkr/sparklyr">spark
-on Azure Databricks</a>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load CRAN libraries</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sparklyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;qs&quot;</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># connect to spark cluster</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">sparklyr.log.console =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">sparklyr.spark_apply.serializer =</span> <span class="st">&quot;qs&quot;</span>) <span class="co"># uses the qs package to improve data serialization before sending to spark cluster</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sc <span class="ot">&lt;-</span> sparklyr<span class="sc">::</span><span class="fu">spark_connect</span>(<span class="at">method =</span> <span class="st">&quot;databricks&quot;</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># call Finn with spark parallel processing</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>finn_output <span class="ot">&lt;-</span> finnts<span class="sc">::</span><span class="fu">forecast_time_series</span>(</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">input_data =</span> hist_data,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>),</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">forecast_horizon =</span> <span class="dv">3</span>, </span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel_processing =</span> <span class="st">&quot;spark&quot;</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+on Azure Databricks</a>. Also check out the growing R support with using
+<a href="https://learn.microsoft.com/en-us/azure/synapse-analytics/spark/apache-spark-r-language">spark
+on Azure Synapse</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># load CRAN libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(sparklyr)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;qs&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># connect to spark cluster</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">options</span>(<span class="at">sparklyr.log.console =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">options</span>(<span class="at">sparklyr.spark_apply.serializer =</span> <span class="st">&quot;qs&quot;</span>) <span class="co"># uses the qs package to improve data serialization before sending to spark cluster</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>sc <span class="ot">&lt;-</span> sparklyr<span class="sc">::</span><span class="fu">spark_connect</span>(<span class="at">method =</span> <span class="st">&quot;databricks&quot;</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># call Finn with spark parallel processing</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>data_sdf <span class="ot">&lt;-</span> sparklyr<span class="sc">::</span><span class="fu">copy_to</span>(sc, hist_data, <span class="st">&quot;data_sdf&quot;</span>, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finn_fcst&quot;</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;spark_run_1&quot;</span>, </span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">&quot;/dbfs/mnt/example/folder&quot;</span> <span class="co"># important that you mount an ADLS path</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>)</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="fu">forecast_time_series</span>(</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>  <span class="at">input_data =</span> data_sdf,</span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>  <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>),</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>,</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>  <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>  <span class="at">forecast_horizon =</span> <span class="dv">3</span>, </span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>  <span class="at">parallel_processing =</span> <span class="st">&quot;spark&quot;</span>, </span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  <span class="at">return_data =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>)</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="co"># return the outputs as a spark data frame</span></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>finn_output_tbl <span class="ot">&lt;-</span> <span class="fu">get_forecast_data</span>(<span class="at">run_info =</span> run_info, </span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>                                     <span class="at">return_type =</span> <span class="st">&quot;sdf&quot;</span>)</span></code></pre></div>
 <p>The above example runs each time series on a separate core on a spark
 cluster. You can also submit multiple time series where each time series
 runs on a separate spark executor (VM) and then leverage all of the
 cores on that executor to run things like hyperparameter tuning or model
 refitting in parallel. This creates two levels of parallelization. One
 at the time series level, then another when doing things like
-hyperparameter tuning within a specific time series. To do that set the
-“run_model_parallel” argument to TRUE in the “forecast_time_series”
-function. Also make sure that you adjust the number of spark executor
-cores to 1, that ensures that only 1 time series runs on an executor at
-a time. Leverage the “spark.executor.cores” argument when configuring
-your spark connection. This can be done using <a href="https://spark.rstudio.com/guides/connections#:~:text=In%20sparklyr%2C%20Spark%20properties%20can%20be%20set%20by,customized%20as%20shown%20in%20the%20example%20code%20below.">sparklyr</a>
+hyperparameter tuning within a specific time series. To do that set
+<code>inner_parallel</code> to TRUE in
+<code>forecast_time_series()</code>. Also make sure that you adjust the
+number of spark executor cores to 1, that ensures that only 1 time
+series runs on an executor at a time. Leverage the
+“spark.executor.cores” argument when configuring your spark connection.
+This can be done using <a href="https://spark.rstudio.com/guides/connections#:~:text=In%20sparklyr%2C%20Spark%20properties%20can%20be%20set%20by,customized%20as%20shown%20in%20the%20example%20code%20below.">sparklyr</a>
 or within the cluster manager itself within the Azure resource. Use the
 “num_cores” argument in the “forecast_time_series” function to control
 how many cores should be used within an executor when running things
 like hyperparameter tuning.</p>
-<p>Finn does not leverage spark data frames (yet!), so the input data to
-Finn still needs to be a standard data frame or tibble. The
-“forecast_time_series” function will be looking for a variable called
-“sc” to use when submitting tasks to the spark cluster, so make sure you
-use that as the variable name when connecting to spark.</p>
-</div>
-<div id="within-azure-using-azure-batch" class="section level2">
-<h2>Within Azure using Azure Batch</h2>
-<p>Important Note: The Azure Batch R packages have been deprecated.
-Please leverage the newer Azure compute options with Finn (like
-spark).</p>
-<p>The second most efficient way to run Finn in Azure is to set
-“parallel_processing” to “azure_batch” and set “run_model_parallel” to
-“TRUE” within the “forecast_time_series” function. This will run each
-time series in separate virtual machines (VM) in Azure Batch. Within
-each VM, hyperparameter tuning, modeling refitting, and model averaging
-are all done in parallel across the cores available on the machine.</p>
-<p><a href="https://azure.microsoft.com/en-us/products/batch/#overview">Azure
-Batch</a> is a powerful resource from Microsoft Azure, that allows for
-easily salable parallel compute. Finn leverages the <a href="https://github.com/Azure/doAzureParallel">doAzureParallel</a> and
-rAzureBatch packages built by Microsoft to connect to Azure batch. Refer
-to their <a href="https://github.com/Azure/doAzureParallel">GitHub
-site</a> for more information about how it works under the hood and how
-to set up your own Azure Batch resource to use with Finn.</p>
-<p>In order to have Finn live on CRAN, it cannot contain any package
-dependencies that live outside of CRAN. The doAzureParallel and
-rAzureBatch packages are only on GitHub, so they will have to be
-installed and called outside of Finn.</p>
-<p>Reference the example below to understand how to connect to an Azure
-Batch compute cluster and submit forecasts to run in the cloud. Make
-sure to enter your specific Azure account information.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load CRAN libraries</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(devtools)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># load GitHub libraries</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;Azure/rAzureBatch&quot;</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;Azure/doAzureParallel&quot;</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rAzureBatch)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doAzureParallel)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># create azure batch cluster info</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>azure_batch_credentials <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;sharedKey&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;batchAccount&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;&lt;insert resource name&gt;&quot;</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;key&quot;</span> <span class="ot">=</span> <span class="st">&quot;&lt;insert compute key&gt;&quot;</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;url&quot;</span> <span class="ot">=</span> <span class="st">&quot;&lt;insert resource URL&gt;&quot;</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;storageAccount&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;&lt;insert resource name&gt;&quot;</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;key&quot;</span> <span class="ot">=</span> <span class="st">&quot;&lt;insert compute key&gt;&quot;</span>,</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;endpointSuffix&quot;</span> <span class="ot">=</span> <span class="st">&quot;core.windows.net&quot;</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;githubAuthenticationToken&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;dockerAuthentication&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="st">&quot;username&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                                <span class="st">&quot;password&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>                                <span class="st">&quot;registry&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>azure_batch_cluster_config <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;&lt;insert compute cluster name&gt;&quot;</span>,</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;vmSize&quot;</span> <span class="ot">=</span> <span class="st">&quot;Standard_D5_v2&quot;</span>, <span class="co"># solid VM size that has worked well in the past with Finn forecasts</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;maxTasksPerNode&quot;</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="co"># tells the cluster to only run one unique time series for each VM. That enables us to then run another layer of parallel processing within the VM</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;poolSize&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;dedicatedNodes&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;min&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;max&quot;</span> <span class="ot">=</span> <span class="dv">200</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;lowPriorityNodes&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;min&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;max&quot;</span> <span class="ot">=</span> <span class="dv">100</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;autoscaleFormula&quot;</span> <span class="ot">=</span> <span class="st">&quot;QUEUE&quot;</span> <span class="co"># automatically scales up VM&#39;s as more jobs get sent to the cluster. </span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;containerImage&quot;</span> <span class="ot">=</span> <span class="st">&quot;mftokic/finn-azure-batch-dev&quot;</span>, <span class="co"># docker image you can use that automatically downloads software needed for Finn to run in cloud</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;rPackages&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;cran&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;Rcpp&#39;</span>, <span class="st">&#39;modeltime&#39;</span>, <span class="st">&#39;modeltime.resample&#39;</span>, <span class="st">&#39;parsnip&#39;</span>, <span class="st">&#39;tune&#39;</span>, <span class="st">&#39;recipes&#39;</span>, <span class="st">&#39;rsample&#39;</span>, <span class="st">&#39;workflows&#39;</span>, <span class="st">&#39;dials&#39;</span>, <span class="st">&#39;lubridate&#39;</span>, <span class="st">&#39;rules&#39;</span>, <span class="st">&#39;Cubist&#39;</span>, <span class="st">&#39;earth&#39;</span>, <span class="st">&#39;kernlab&#39;</span>, <span class="st">&#39;doParallel&#39;</span>, <span class="st">&#39;dplyr&#39;</span>, <span class="st">&#39;tibble&#39;</span>, <span class="st">&#39;tidyr&#39;</span>, <span class="st">&#39;purrr&#39;</span>, <span class="st">&#39;stringr&#39;</span>, <span class="st">&#39;prophet&#39;</span>, <span class="st">&#39;glmnet&#39;</span>, <span class="st">&#39;gtools&#39;</span>), <span class="co"># finnts package dependencies</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;github&quot;</span> <span class="ot">=</span> <span class="fu">list</span>(),</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;bioconductor&quot;</span> <span class="ot">=</span> <span class="fu">list</span>()</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;commandLine&quot;</span> <span class="ot">=</span> <span class="fu">list</span>()</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="co"># create or connect to existing Azure Batch cluster</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>doAzureParallel<span class="sc">::</span><span class="fu">setCredentials</span>(azure_batch_credentials)</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>cluster <span class="ot">&lt;-</span> doAzureParallel<span class="sc">::</span><span class="fu">makeCluster</span>(azure_batch_cluster_config)</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>doAzureParallel<span class="sc">::</span><span class="fu">registerDoAzureParallel</span>(cluster)</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="co"># call Finn with Azure Batch parallel processing</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>finn_output <span class="ot">&lt;-</span> finnts<span class="sc">::</span><span class="fu">forecast_time_series</span>(</span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>  <span class="at">input_data =</span> hist_data,</span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>  <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>),</span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>  <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>,</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>,</span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>  <span class="at">forecast_horizon =</span> <span class="dv">3</span>, </span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel_processing =</span> <span class="st">&quot;azure_batch&quot;</span>, </span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;azure_batch_forecast_test&quot;</span></span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="co"># optional code to delete compute cluster</span></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>parallel<span class="sc">::</span><span class="fu">stopCluster</span>(cluster)</span></code></pre></div>
-<p>The best part of Azure Batch is how it can easily scale to more
-compute as needed. In the above example, the lowest amount of VM’s
-running at any time will be 2, and can easily scale to 300 when needed.
-This allows you to pay for extra compute only when you need it, and
-allows for forecasts to run that much quicker. You can have separate
-Finn forecasts (different data sets or inputs) submitted to the same
-Azure Batch cluster to all run in parallel. How cool is that?!</p>
-<p>To keep your Azure resource keys secure without hard coding them into
-a R script, check out the <a href="https://github.com/Azure/AzureKeyVault">Azure Key Vault</a>
-package to safely retrieve and leverage keys/secrets when using
-Finn.</p>
+<p><code>forecast_time_series()</code> will be looking for a variable
+called “sc” to use when submitting tasks to the spark cluster, so make
+sure you use that as the variable name when connecting to spark. Also
+it’s important that you mount your spark session to an Azure Data Lake
+Storage (ADLS) account, and provide the mounted path to where you’d like
+your Finn results to be written to within
+<code>set_run_info()</code>.</p>
 </div>
 
 
