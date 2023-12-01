@@ -374,18 +374,18 @@ before models are trained.</p>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">print</span>(R1_prepped_data_tbl)</span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 36 x 66</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;    Combo id    Date       Target Date_index.num Date_diff Date_year Date_half</span></span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;date&gt;      &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;  1 M2    M2    2013-01-01   2650     1356998400         0      2013         1</span></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;  2 M2    M2    2013-02-01   2910     1359676800   2678400      2013         1</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;  3 M2    M2    2013-03-01   2810     1362096000   2419200      2013         1</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;  4 M2    M2    2013-04-01   2800     1364774400   2678400      2013         1</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;  5 M2    M2    2013-05-01   2850     1367366400   2592000      2013         1</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;  6 M2    M2    2013-06-01   2960     1370044800   2678400      2013         1</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;  7 M2    M2    2013-07-01   3090     1372636800   2592000      2013         2</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt;  8 M2    M2    2013-08-01   2840     1375315200   2678400      2013         2</span></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt;  9 M2    M2    2013-09-01   2580     1377993600   2678400      2013         2</span></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 10 M2    M2    2013-10-01   2740     1380585600   2592000      2013         2</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id      Target Date_index.num Date_diff Date_year Date_half</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;  1 2013-01-01 M2    M2     722366.     1356998400         0      2013         1</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;  2 2013-02-01 M2    M2     722366.     1359676800   2678400      2013         1</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;  3 2013-03-01 M2    M2    -285828.     1362096000   2419200      2013         1</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;  4 2013-04-01 M2    M2     -28033.     1364774400   2678400      2013         1</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;  5 2013-05-01 M2    M2     141165.     1367366400   2592000      2013         1</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;  6 2013-06-01 M2    M2     319357.     1370044800   2678400      2013         1</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;  7 2013-07-01 M2    M2     393011.     1372636800   2592000      2013         2</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt;  8 2013-08-01 M2    M2    -740801.     1375315200   2678400      2013         2</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt;  9 2013-09-01 M2    M2    -704178.     1377993600   2678400      2013         2</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 10 2013-10-01 M2    M2     425346.     1380585600   2592000      2013         2</span></span>
 <span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; # i 26 more rows</span></span>
 <span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; # i 58 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
 <span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;,</span></span>
@@ -399,18 +399,18 @@ before models are trained.</p>
 <span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a></span>
 <span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="fu">print</span>(R2_prepped_data_tbl)</span>
 <span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt; # A tibble: 216 x 133</span></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt;    Combo id    Date       Target Date_index.num Date_diff Date_year Date_half</span></span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;date&gt;      &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt;  1 M2    M2    2013-01-01   2650     1356998400         0      2013         1</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt;  2 M2    M2    2013-02-01   2910     1359676800   2678400      2013         1</span></span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt;  3 M2    M2    2013-03-01   2810     1362096000   2419200      2013         1</span></span>
-<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt;  4 M2    M2    2013-04-01   2800     1364774400   2678400      2013         1</span></span>
-<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt;  5 M2    M2    2013-05-01   2850     1367366400   2592000      2013         1</span></span>
-<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt;  6 M2    M2    2013-06-01   2960     1370044800   2678400      2013         1</span></span>
-<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt;  7 M2    M2    2013-07-01   3090     1372636800   2592000      2013         2</span></span>
-<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt;  8 M2    M2    2013-08-01   2840     1375315200   2678400      2013         2</span></span>
-<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt;  9 M2    M2    2013-09-01   2580     1377993600   2678400      2013         2</span></span>
-<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; 10 M2    M2    2013-10-01   2740     1380585600   2592000      2013         2</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id      Target Date_index.num Date_diff Date_year Date_half</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt;  1 2013-01-01 M2    M2     722366.     1356998400         0      2013         1</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt;  2 2013-02-01 M2    M2     722366.     1359676800   2678400      2013         1</span></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt;  3 2013-03-01 M2    M2    -285828.     1362096000   2419200      2013         1</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt;  4 2013-04-01 M2    M2     -28033.     1364774400   2678400      2013         1</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt;  5 2013-05-01 M2    M2     141165.     1367366400   2592000      2013         1</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt;  6 2013-06-01 M2    M2     319357.     1370044800   2678400      2013         1</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt;  7 2013-07-01 M2    M2     393011.     1372636800   2592000      2013         2</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt;  8 2013-08-01 M2    M2    -740801.     1375315200   2678400      2013         2</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt;  9 2013-09-01 M2    M2    -704178.     1377993600   2678400      2013         2</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; 10 2013-10-01 M2    M2     425346.     1380585600   2592000      2013         2</span></span>
 <span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; # i 206 more rows</span></span>
 <span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; # i 125 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
 <span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Horizon &lt;dbl&gt;, Origin &lt;dbl&gt;, Target_lag1 &lt;dbl&gt;,</span></span>

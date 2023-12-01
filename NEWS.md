@@ -1,3 +1,19 @@
+# finnts 0.4.0
+
+## Improvements
+
+-   Tidymodels speed up
+-   Added external regressor support for ARIMA by introducing a new model option of `arimax`, which uses engineered features in addition to any external regressors supplied.
+-   Automated feature selection, refer to feature selection vignette for more details
+-   Error handling in hierarchical forecast reconciliation
+-   Box-cox and differencing transformations
+-   Added new function, `list_models()`, that lists available models in the package 
+
+## Bug Fixes
+
+-   Best model selection
+-   Hierarchical forecast reconciliation
+
 # finnts 0.3.0
 
 ## Improvements

@@ -14,7 +14,7 @@ m4_monthly %>%
   timetk::tk_augment_fourier(date, .periods = c(3, 6, 12), .K = 1) %>%
   dplyr::ungroup()
 
-## ---- echo = FALSE, message = FALSE-------------------------------------------
+## ---- message = FALSE---------------------------------------------------------
 
 library(finnts)
 
@@ -42,7 +42,7 @@ R1_prepped_data_tbl <- get_prepped_data(run_info = run_info,
 
 print(R1_prepped_data_tbl)
 
-## ---- echo = FALSE, message = FALSE-------------------------------------------
+## ---- message = FALSE---------------------------------------------------------
 
 library(finnts)
 
