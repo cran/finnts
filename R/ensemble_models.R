@@ -181,27 +181,29 @@ ensemble_models <- function(run_info,
       # model forecasts
       single_model_tbl <- NULL
       if (run_local_models) {
-        suppressWarnings(try(single_model_tbl <- read_file(run_info,
-          path = paste0(
-            "/forecasts/", hash_data(run_info$experiment_name), "-", hash_data(run_info$run_name),
-            "-", combo, "-single_models.", run_info$data_output
+        suppressWarnings(try(
+          single_model_tbl <- read_file(run_info,
+            path = paste0(
+              "/forecasts/", hash_data(run_info$experiment_name), "-", hash_data(run_info$run_name),
+              "-", combo, "-single_models.", run_info$data_output
+            ),
+            return_type = "df"
           ),
-          return_type = "df"
-        ),
-        silent = TRUE
+          silent = TRUE
         ))
       }
 
       global_model_tbl <- NULL
       if (run_global_models) {
-        suppressWarnings(try(global_model_tbl <- read_file(run_info,
-          path = paste0(
-            "/forecasts/", hash_data(run_info$experiment_name), "-", hash_data(run_info$run_name),
-            "-", combo, "-global_models.", run_info$data_output
+        suppressWarnings(try(
+          global_model_tbl <- read_file(run_info,
+            path = paste0(
+              "/forecasts/", hash_data(run_info$experiment_name), "-", hash_data(run_info$run_name),
+              "-", combo, "-global_models.", run_info$data_output
+            ),
+            return_type = "df"
           ),
-          return_type = "df"
-        ),
-        silent = TRUE
+          silent = TRUE
         ))
       }
 
@@ -234,7 +236,8 @@ ensemble_models <- function(run_info,
         avail_arg_list <- list(
           "train_data" = prep_ensemble_tbl %>% dplyr::select(-Train_Test_ID),
           "model_type" = "ensemble",
-          "pca" = FALSE
+          "pca" = FALSE, 
+          "multistep" = FALSE
         )
 
         # get specific model spec
@@ -336,7 +339,6 @@ ensemble_models <- function(run_info,
         .multicombine = TRUE,
         .noexport = NULL
       ) %do% {
-
         # get initial run info
         model <- model_run %>%
           dplyr::pull(Model_Name)
@@ -365,6 +367,7 @@ ensemble_models <- function(run_info,
             parallel_over = "everything"
           )
         ) %>%
+          base::suppressMessages() %>%
           base::suppressWarnings()
 
         best_param <- tune::select_best(tune_results, metric = "rmse")
@@ -396,7 +399,9 @@ ensemble_models <- function(run_info,
             pkgs = inner_packages,
             parallel_over = "everything"
           )
-        )
+        ) %>%
+          base::suppressMessages() %>%
+          base::suppressWarnings()
 
         final_fcst <- tune::collect_predictions(refit_tbl) %>%
           dplyr::rename(
@@ -404,10 +409,6 @@ ensemble_models <- function(run_info,
             Train_Test_ID = id
           ) %>%
           dplyr::mutate(Train_Test_ID = as.numeric(Train_Test_ID)) %>%
-          dplyr::left_join(model_train_test_tbl %>%
-            dplyr::select(Run_Type, Train_Test_ID),
-          by = "Train_Test_ID"
-          ) %>%
           dplyr::left_join(
             prep_ensemble_tbl %>%
               dplyr::mutate(.row = dplyr::row_number()) %>%

@@ -254,7 +254,7 @@ is a good example with geographical combo variables that can be
 aggregated into one another when building a standard hierarchy
 forecast.</p>
 <pre><code>#&gt; Standard Hierarchical Time Series Data
-#&gt; # A tibble: 9 x 5
+#&gt; # A tibble: 9 × 5
 #&gt;   Continent     Country       City        Date       Target
 #&gt;   &lt;chr&gt;         &lt;chr&gt;         &lt;chr&gt;       &lt;date&gt;      &lt;dbl&gt;
 #&gt; 1 North America United States Kansas City 2020-01-01    100
@@ -282,7 +282,7 @@ the hts package calls “grouped”. A good example is a data set that
 contains historical time series by geography, customer segment, and
 product.</p>
 <pre><code>#&gt; Grouped Hierarchical Time Series Data
-#&gt; # A tibble: 12 x 5
+#&gt; # A tibble: 12 × 5
 #&gt;    Country       Segment       Product Date       Target
 #&gt;    &lt;chr&gt;         &lt;chr&gt;         &lt;chr&gt;   &lt;date&gt;      &lt;dbl&gt;
 #&gt;  1 United States Enterprise    Coffee  2020-01-01     10
@@ -316,11 +316,23 @@ forecasts for the grand total of “Coffee” and “Tea”.</li>
 </div>
 <div id="external-regressors" class="section level3">
 <h3>External Regressors</h3>
-<p>Currently finnts does not allow for external regressors to be used in
-a hierarchical forecast. This is something we plan to implement in a
-future release. If you select a hierarchical forecast method and include
-external regressor input values, Finn will ignore the external
-regressors and will not use them in modeling.</p>
+<p>The aggregation process is automatically calculated for each external
+regressor, depending on how the regressor maps to the combo variables.
+If a regressor is unique for each time series, then the standard
+aggregation process is implemented (same as the process for the target
+variable). If the regressor repeats the same values across all time
+series, then only one global copy is retained and applied to all new
+aggregated time series. If the regressor specifically maps to one or
+more combo variables, then the relationship is respected while still
+being able to aggregate to the total level. Aggregations of drivers are
+always summed.</p>
+<p>The only limitation is when an external regressor maps to the middle
+of a standard hierarchy (not at the global level or bottom level), in
+this case the regressor will be summed at the global level across the
+hierarchy. This is due to limitations of aggregation naming in the hts
+package used in finnts.</p>
+<p>Explore the final results of the aggregations by seeing the end
+result using <code>get_prepped_data()</code>.</p>
 </div>
 <div id="spark-parallel-processing" class="section level3">
 <h3>Spark Parallel Processing</h3>

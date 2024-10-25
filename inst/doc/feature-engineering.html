@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -119,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -399,7 +406,7 @@ function from timetk.</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(id) <span class="sc">%&gt;%</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  timetk<span class="sc">::</span><span class="fu">tk_augment_fourier</span>(date, <span class="at">.periods =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">12</span>), <span class="at">.K =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,574 x 37</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,574 × 37</span></span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt;    id    date       value index.num    diff  year year.iso  half quarter month</span></span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt; &lt;date&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;    &lt;int&gt; &lt;int&gt;   &lt;int&gt; &lt;int&gt;</span></span>
 <span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;  1 M1    1976-06-01  8000 202435200      NA  1976     1976     1       2     6</span></span>
@@ -412,13 +419,13 @@ function from timetk.</p>
 <span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt;  8 M1    1977-01-01  6650 220924800 2678400  1977     1976     1       1     1</span></span>
 <span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt;  9 M1    1977-02-01  6830 223603200 2678400  1977     1977     1       1     2</span></span>
 <span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; 10 M1    1977-03-01  5710 226022400 2419200  1977     1977     1       1     3</span></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; # i 1,564 more rows</span></span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; # i 27 more variables: month.xts &lt;int&gt;, month.lbl &lt;ord&gt;, day &lt;int&gt;, hour &lt;int&gt;,</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; # ℹ 1,564 more rows</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; # ℹ 27 more variables: month.xts &lt;int&gt;, month.lbl &lt;ord&gt;, day &lt;int&gt;, hour &lt;int&gt;,</span></span>
 <span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; #   minute &lt;int&gt;, second &lt;int&gt;, hour12 &lt;int&gt;, am.pm &lt;int&gt;, wday &lt;int&gt;,</span></span>
 <span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; #   wday.xts &lt;int&gt;, wday.lbl &lt;ord&gt;, mday &lt;int&gt;, qday &lt;int&gt;, yday &lt;int&gt;,</span></span>
 <span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; #   mweek &lt;int&gt;, week &lt;int&gt;, week.iso &lt;int&gt;, week2 &lt;int&gt;, week3 &lt;int&gt;,</span></span>
 <span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; #   week4 &lt;int&gt;, mday7 &lt;int&gt;, date_sin3_K1 &lt;dbl&gt;, date_cos3_K1 &lt;dbl&gt;,</span></span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; #   date_sin6_K1 &lt;dbl&gt;, date_cos6_K1 &lt;dbl&gt;, date_sin12_K1 &lt;dbl&gt;, ...</span></span></code></pre></div>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; #   date_sin6_K1 &lt;dbl&gt;, date_cos6_K1 &lt;dbl&gt;, date_sin12_K1 &lt;dbl&gt;, …</span></span></code></pre></div>
 </div>
 <div id="lags-rolling-windows-and-polynomial-transformations" class="section level2">
 <h2>Lags, Rolling Windows, and Polynomial Transformations</h2>
@@ -448,65 +455,76 @@ created.</p>
 <p>In addition to the standard approaches above, finnts also does two
 different ways of preparing features to be created for a multivariate
 machine learning model.</p>
-<p>In the first recipe, referred to as “R1” in default finnts models,
-all of the engineered target and external regressor features are used
-but cannot be less than the forecast horizon. For example, a monthly
-data set with a forecast horizon of 3, finnts will take engineered
-features like lags and rolling window features but only use those one
-that are for periods equal to or greater than 3. Recursive forecasting
-is not supported in default finnts multivariate machine learning models,
-since feeding forecast outputs as features to create another forecast
-adds complex layers of uncertainty that can easily spiral out of control
-and produce poor forecasts. NA values created by generating lag features
-are filled “up”. This results in the first initial periods of a time
-series having some data leakage but the effect should be small if the
-time series is long enough.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2012-01-01&quot;</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                id <span class="sc">==</span> <span class="st">&quot;M2&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finnts_fcst&quot;</span>, </span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;R1_run&quot;</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>)</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="fu">prep_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>          <span class="at">input_data =</span> hist_data, </span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>          <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>), </span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>          <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>, </span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>          <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>, </span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>          <span class="at">forecast_horizon =</span> <span class="dv">3</span>, </span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>          <span class="at">recipes_to_run =</span> <span class="st">&quot;R1&quot;</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>R1_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>                                        <span class="at">recipe =</span> <span class="st">&quot;R1&quot;</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="fu">print</span>(R1_prepped_data_tbl)</span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; # A tibble: 45 x 79</span></span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id       Target Date_index.num Date_diff Date_year Date_half</span></span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt;  1 2012-01-01 M2    M2      680794.     1325376000         0      2012         1</span></span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt;  2 2012-02-01 M2    M2      680794.     1328054400   2678400      2012         1</span></span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt;  3 2012-03-01 M2    M2      869475.     1330560000   2505600      2012         1</span></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt;  4 2012-04-01 M2    M2    -1244450.     1333238400   2678400      2012         1</span></span>
-<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt;  5 2012-05-01 M2    M2     1214019.     1335830400   2592000      2012         1</span></span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt;  6 2012-06-01 M2    M2      184088.     1338508800   2678400      2012         1</span></span>
-<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="co">#&gt;  7 2012-07-01 M2    M2     -482907.     1341100800   2592000      2012         2</span></span>
-<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt;  8 2012-08-01 M2    M2     -116729.     1343779200   2678400      2012         2</span></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt;  9 2012-09-01 M2    M2     -340595.     1346457600   2678400      2012         2</span></span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt; 10 2012-10-01 M2    M2      311662.     1349049600   2592000      2012         2</span></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt; # i 35 more rows</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt; # i 71 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Target_lag3 &lt;dbl&gt;, Target_lag6 &lt;dbl&gt;,</span></span>
-<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; #   Target_lag9 &lt;dbl&gt;, Target_lag12 &lt;dbl&gt;, Target_lag3_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll3_Avg &lt;dbl&gt;, Target_lag9_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12_roll3_Avg &lt;dbl&gt;, Target_lag3_roll6_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll6_Avg &lt;dbl&gt;, Target_lag9_roll6_Avg &lt;dbl&gt;, ...</span></span></code></pre></div>
+<p>In the first recipe, referred to as “R1” in default finnts models, by
+default takes a single step horizon approach. Meaning all of the
+engineered target and external regressor features are used but the lags
+cannot be less than the forecast horizon. For example, a monthly data
+set with a forecast horizon of 3, finnts will take engineered features
+like lags and rolling window features but only use those lags that are
+for periods equal to or greater than 3. You can also run a multistep
+horizon approach by setting <code>multistep_horizon</code> to TRUE in
+<code>prep_models()</code>. The multistep approach will create features
+that can be used by specific multivariate models that optimize for each
+period in a forecast horizon. More on this in the “models used in
+finnts” vignette. Recursive forecasting is not supported in finnts
+multivariate machine learning models, since feeding forecast outputs as
+features to create another forecast adds complex layers of uncertainty
+that can easily spiral out of control and produce poor forecasts. NA
+values created by generating lag features are filled “up”. This results
+in the first initial periods of a time series having some data leakage
+but the effect should be small if the time series is long enough.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    date <span class="sc">&gt;=</span> <span class="st">&quot;2012-01-01&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    id <span class="sc">==</span> <span class="st">&quot;M2&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finnts_fcst&quot;</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;R1_run&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">prep_data</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="at">input_data =</span> hist_data,</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>),</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="at">forecast_horizon =</span> <span class="dv">3</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="at">recipes_to_run =</span> <span class="st">&quot;R1&quot;</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="at">multistep_horizon =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>)</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>R1_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="at">recipe =</span> <span class="st">&quot;R1&quot;</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>)</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="fu">print</span>(R1_prepped_data_tbl)</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; # A tibble: 45 × 79</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id    Target Date_index.num Date_diff Date_year Date_half</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="co">#&gt;  1 2012-01-01 M2    M2       260     1325376000         0      2012         1</span></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt;  2 2012-02-01 M2    M2       260     1328054400   2678400      2012         1</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt;  3 2012-03-01 M2    M2       300     1330560000   2505600      2012         1</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt;  4 2012-04-01 M2    M2      -440     1333238400   2678400      2012         1</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt;  5 2012-05-01 M2    M2       430     1335830400   2592000      2012         1</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt;  6 2012-06-01 M2    M2        60     1338508800   2678400      2012         1</span></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt;  7 2012-07-01 M2    M2      -160     1341100800   2592000      2012         2</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt;  8 2012-08-01 M2    M2       -40     1343779200   2678400      2012         2</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt;  9 2012-09-01 M2    M2      -120     1346457600   2678400      2012         2</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; 10 2012-10-01 M2    M2       110     1349049600   2592000      2012         2</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt; # ℹ 35 more rows</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; # ℹ 71 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Target_lag3 &lt;dbl&gt;, Target_lag6 &lt;dbl&gt;,</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; #   Target_lag9 &lt;dbl&gt;, Target_lag12 &lt;dbl&gt;, Target_lag3_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll3_Avg &lt;dbl&gt;, Target_lag9_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12_roll3_Avg &lt;dbl&gt;, Target_lag3_roll6_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll6_Avg &lt;dbl&gt;, Target_lag9_roll6_Avg &lt;dbl&gt;, …</span></span></code></pre></div>
 <p>The second recipe is referred to as “R2” in default finnts models. It
 takes a very different approach than the “R1” recipe. For a 3 month
 forecast horizon on a monthly dataset, target and rolling window
@@ -518,52 +536,57 @@ create new features that are now specific to each horizon period. This
 helps the default finnts models find new unique relationships to model,
 when compared to a more formal approach in “R1”. NA values created by
 generating lag features are filled “up”.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2012-01-01&quot;</span>, </span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                id <span class="sc">==</span> <span class="st">&quot;M2&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finnts_fcst&quot;</span>, </span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;R2_run&quot;</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>)</span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="fu">prep_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>          <span class="at">input_data =</span> hist_data, </span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>          <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>), </span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>          <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>, </span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>          <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>, </span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>          <span class="at">forecast_horizon =</span> <span class="dv">3</span>, </span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>          <span class="at">recipes_to_run =</span> <span class="st">&quot;R2&quot;</span>)</span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>R2_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>                                        <span class="at">recipe =</span> <span class="st">&quot;R2&quot;</span>)</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    date <span class="sc">&gt;=</span> <span class="st">&quot;2012-01-01&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    id <span class="sc">==</span> <span class="st">&quot;M2&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finnts_fcst&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;R2_run&quot;</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="fu">prep_data</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="at">input_data =</span> hist_data,</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>),</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="at">forecast_horizon =</span> <span class="dv">3</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  <span class="at">recipes_to_run =</span> <span class="st">&quot;R2&quot;</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>)</span>
 <span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="fu">print</span>(R2_prepped_data_tbl)</span>
-<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; # A tibble: 135 x 107</span></span>
-<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id       Target Date_index.num Date_diff Date_year Date_half</span></span>
-<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;  1 2012-01-01 M2    M2      680794.     1325376000         0      2012         1</span></span>
-<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt;  2 2012-02-01 M2    M2      680794.     1328054400   2678400      2012         1</span></span>
-<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt;  3 2012-03-01 M2    M2      869475.     1330560000   2505600      2012         1</span></span>
-<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;  4 2012-04-01 M2    M2    -1244450.     1333238400   2678400      2012         1</span></span>
-<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt;  5 2012-05-01 M2    M2     1214019.     1335830400   2592000      2012         1</span></span>
-<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt;  6 2012-06-01 M2    M2      184088.     1338508800   2678400      2012         1</span></span>
-<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;  7 2012-07-01 M2    M2     -482907.     1341100800   2592000      2012         2</span></span>
-<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;  8 2012-08-01 M2    M2     -116729.     1343779200   2678400      2012         2</span></span>
-<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt;  9 2012-09-01 M2    M2     -340595.     1346457600   2678400      2012         2</span></span>
-<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; 10 2012-10-01 M2    M2      311662.     1349049600   2592000      2012         2</span></span>
-<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; # i 125 more rows</span></span>
-<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; # i 99 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
-<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Horizon &lt;dbl&gt;, Origin &lt;dbl&gt;, Target_lag1 &lt;dbl&gt;,</span></span>
-<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt; #   Target_lag2 &lt;dbl&gt;, Target_lag3 &lt;dbl&gt;, Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;,</span></span>
-<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12 &lt;dbl&gt;, Target_lag1_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt; #   Target_lag2_roll3_Avg &lt;dbl&gt;, Target_lag3_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll3_Avg &lt;dbl&gt;, Target_lag9_roll3_Avg &lt;dbl&gt;, ...</span></span></code></pre></div>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>R2_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>  <span class="at">recipe =</span> <span class="st">&quot;R2&quot;</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>)</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="fu">print</span>(R2_prepped_data_tbl)</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; # A tibble: 135 × 107</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id    Target Date_index.num Date_diff Date_year Date_half</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt;  1 2012-01-01 M2    M2       260     1325376000         0      2012         1</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;  2 2012-02-01 M2    M2       260     1328054400   2678400      2012         1</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;  3 2012-03-01 M2    M2       300     1330560000   2505600      2012         1</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt;  4 2012-04-01 M2    M2      -440     1333238400   2678400      2012         1</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt;  5 2012-05-01 M2    M2       430     1335830400   2592000      2012         1</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt;  6 2012-06-01 M2    M2        60     1338508800   2678400      2012         1</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt;  7 2012-07-01 M2    M2      -160     1341100800   2592000      2012         2</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt;  8 2012-08-01 M2    M2       -40     1343779200   2678400      2012         2</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt;  9 2012-09-01 M2    M2      -120     1346457600   2678400      2012         2</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt; 10 2012-10-01 M2    M2       110     1349049600   2592000      2012         2</span></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt; # ℹ 125 more rows</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt; # ℹ 99 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Horizon &lt;dbl&gt;, Origin &lt;dbl&gt;, Target_lag1 &lt;dbl&gt;,</span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co">#&gt; #   Target_lag2 &lt;dbl&gt;, Target_lag3 &lt;dbl&gt;, Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;,</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12 &lt;dbl&gt;, Target_lag1_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a><span class="co">#&gt; #   Target_lag2_roll3_Avg &lt;dbl&gt;, Target_lag3_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll3_Avg &lt;dbl&gt;, Target_lag9_roll3_Avg &lt;dbl&gt;, …</span></span></code></pre></div>
 </div>
 <div id="model-specific-preprocessing" class="section level2">
 <h2>Model Specific Preprocessing</h2>

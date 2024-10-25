@@ -1,4 +1,3 @@
-
 #' Prep Models
 #'
 #' Preps various aspects of run before training models. Things like train/test
@@ -60,7 +59,6 @@ prep_models <- function(run_info,
                         pca = NULL,
                         num_hyperparameters = 10,
                         seed = 123) {
-
   # check input values
   check_input_type("run_info", run_info, "list")
   check_input_type("back_test_scenarios", back_test_scenarios, c("NULL", "numeric"))
@@ -432,6 +430,8 @@ model_workflows <- function(run_info,
   date_type <- log_df$date_type
   forecast_approach <- log_df$forecast_approach
   forecast_horizon <- log_df$forecast_horizon
+  multistep_horizon <- log_df$multistep_horizon
+  external_regressors <- ifelse(log_df$external_regressors == "NULL", NULL, strsplit(log_df$external_regressors, split = "---")[[1]])
 
   if (is.null(pca) & date_type %in% c("day", "week")) {
     pca <- TRUE
@@ -512,7 +512,6 @@ model_workflows <- function(run_info,
   ml_models <- list_models()
 
   if (is.null(models_to_run) & is.null(models_not_to_run)) {
-
     # do nothing, using existing ml_models list
   } else if (is.null(models_to_run) & !is.null(models_not_to_run)) {
     ml_models <- setdiff(ml_models, models_not_to_run)
@@ -556,14 +555,29 @@ model_workflows <- function(run_info,
       tidyr::unnest(Data)
 
     # get args to feed into model spec functions
-    avail_arg_list <- list(
-      "train_data" = recipe_tbl,
-      "frequency" = get_frequency_number(date_type),
-      "horizon" = forecast_horizon,
-      "seasonal_period" = get_seasonal_periods(date_type),
-      "model_type" = "single",
-      "pca" = pca
-    )
+    if (recipe == "R1") {
+      avail_arg_list <- list(
+        "train_data" = recipe_tbl,
+        "frequency" = get_frequency_number(date_type),
+        "horizon" = forecast_horizon,
+        "seasonal_period" = get_seasonal_periods(date_type),
+        "model_type" = "single",
+        "pca" = pca,
+        "multistep" = multistep_horizon,
+        "external_regressors" = external_regressors
+      )
+    } else {
+      avail_arg_list <- list(
+        "train_data" = recipe_tbl,
+        "frequency" = get_frequency_number(date_type),
+        "horizon" = forecast_horizon,
+        "seasonal_period" = get_seasonal_periods(date_type),
+        "model_type" = "single",
+        "pca" = pca,
+        "multistep" = FALSE,
+        "external_regressors" = external_regressors
+      )
+    }
 
     # don't create workflows for models that only use R1 recipe
     if (recipe == "R2" & !(model %in% r2_models)) {
@@ -790,7 +804,9 @@ model_hyperparameters <- function(run_info,
 
   # update logging file
   log_df <- log_df %>%
-    dplyr::mutate(num_hyperparameters = num_hyperparameters)
+    dplyr::mutate(
+      num_hyperparameters = num_hyperparameters
+    )
 
   write_data(
     x = log_df,
@@ -813,11 +829,29 @@ get_frequency_number <- function(date_type) {
     "year" = 1,
     "quarter" = 4,
     "month" = 12,
-    "week" = 365.25 / 7,
+    "week" = 52.17857, # 365.25 / 7
     "day" = 365.25
   )
 
   return(frequency_number)
+}
+
+#' Gets the right date type
+#'
+#' @param frequency number
+#'
+#' @return Returns date_type
+#' @noRd
+get_date_type <- function(frequency) {
+  date_type <- switch(as.character(frequency),
+    "1" = "year",
+    "4" = "quarter",
+    "12" = "month",
+    "52.17857" = "week",
+    "365.25" = "day"
+  )
+
+  return(date_type)
 }
 
 #' Gets the seasonal periods

@@ -1,3 +1,25 @@
+# finnts 0.5.0
+
+## Improvements
+
+-   Added support for hierarchical forecasting with external regressors
+-   Allow global models for hierarchical forecasts
+-   Multistep horizon forecasts for R1 recipe, listed as `multistep_horizon` within `prep_data()` 
+-   Always save the most accurate model average, regardless if selected as best model. This allows for improved scaling with large data sets.
+-   Automatically condense large forecasts (+3k time series) into smaller amount of files to make it easier to read forecast outputs
+-   Improved weighted MAPE calculation across all time series
+-   Changed default for box_cox argument in `prep_data()` to FALSE
+-   Support for spark version 3.4 in Azure Synapse/Fabric
+
+## Bug Fixes
+
+-   Error in run_type column join in final forecast output
+-   Error in running feature selection
+
+## Breaking Changes
+
+-   Minimum R version now set to R 4.0 to comply with package dependency minimum version for tune
+
 # finnts 0.4.0
 
 ## Improvements

@@ -1,10 +1,10 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ---- message = FALSE, eval = FALSE-------------------------------------------
+## ----message = FALSE, eval = FALSE--------------------------------------------
 #  # load CRAN libraries
 #  library(finnts)
 #  library(sparklyr)
@@ -43,6 +43,8 @@ knitr::opts_chunk$set(
 #  )
 #  
 #  # return the outputs as a spark data frame
-#  finn_output_tbl <- get_forecast_data(run_info = run_info,
-#                                       return_type = "sdf")
+#  finn_output_tbl <- get_forecast_data(
+#    run_info = run_info,
+#    return_type = "sdf"
+#  )
 

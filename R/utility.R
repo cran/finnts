@@ -13,14 +13,17 @@ utils::globalVariables(c(
   "x", "num_cores", "run_info", "negative_forecast", "Forecast_Adj", "Final_Col", "lag_val", "libs",
   ".config", "Forecast_Tbl", "Model_Workflow", "id", "model_run",
   "Auto_Accept", "Feature", "Imp", "Importance", "LOFO_Var", "Var_RMSE", "Vote", "Votes", "desc",
-  "term", "Column", "Box_Cox_Lambda", "get_recipie_configurable"
+  "term", "Column", "Box_Cox_Lambda", "get_recipie_configurable", "Agg", "Unique", "Var",
+  "Var_Combo", "regressor", "regressor_tbl", "value_level_iter", ".actual", ".fitted",
+  "forecast_horizon", "lag", "new_data", "object", "fit", "Row_Num", "Run_Number", "weight",
+  "Total", "Weight", "batch"
 ))
 
 #' @importFrom magrittr %>%
 
 #' @importFrom methods formalArgs
 
-#' @importFrom stats sd
+#' @importFrom stats sd setNames
 
 #' @importFrom foreach %do% %dopar%
 
@@ -78,4 +81,22 @@ cbind.fill <- function(..., fill = NA) {
   maxlength <- max(unlist(lapply(inputs, len)))
   bufferedInputs <- lapply(inputs, buffer, length.out = maxlength, fill, preserveClass = FALSE)
   return(Reduce(cbind.data.frame, bufferedInputs))
+}
+
+
+# The functions below define the model information. These access the model
+# environment inside of parsnip so they have to be executed once parsnip has
+# been loaded.
+
+.onLoad <- function(libname, pkgname) {
+  # CRAN OMP THREAD LIMIT
+  Sys.setenv("OMP_THREAD_LIMIT" = 1)
+
+  # This defines the model database
+  make_cubist_multistep()
+  make_glmnet_multistep()
+  make_mars_multistep()
+  make_svm_poly_multistep()
+  make_svm_rbf_multistep()
+  make_xgboost_multistep()
 }

@@ -1,4 +1,3 @@
-
 #' Train Individual Models
 #'
 #' @param run_info run info using the [set_run_info()] function
@@ -92,10 +91,11 @@ train_models <- function(run_info,
   forecast_approach <- log_df$forecast_approach
   stationary <- log_df$stationary
   box_cox <- log_df$box_cox
+  multistep_horizon <- log_df$multistep_horizon
+  forecast_horizon <- log_df$forecast_horizon
+  external_regressors <- ifelse(log_df$external_regressors == "NULL", NULL, strsplit(log_df$external_regressors, split = "---")[[1]])
 
   if (is.null(run_global_models) & date_type %in% c("day", "week")) {
-    run_global_models <- FALSE
-  } else if (forecast_approach != "bottoms_up") {
     run_global_models <- FALSE
   } else if (is.null(run_global_models)) {
     run_global_models <- TRUE
@@ -219,7 +219,6 @@ train_models <- function(run_info,
     stringr::str_replace(hash_data("All-Data"), "All-Data")
 
   if (length(combo_diff) == 0 & length(prev_combo_list) > 0) {
-
     # check if input values have changed
     current_log_df <- tibble::tibble(
       run_global_models = run_global_models,
@@ -269,7 +268,6 @@ train_models <- function(run_info,
     .noexport = NULL
   ) %op%
     {
-
       # get time series
       combo_hash <- x
 
@@ -333,7 +331,7 @@ train_models <- function(run_info,
             dplyr::filter(Recipe == "R1") %>%
             dplyr::select(Data) %>%
             tidyr::unnest(Data) %>%
-            select_features(
+            run_feature_selection(
               run_info = run_info,
               train_test_data = model_train_test_tbl,
               parallel_processing = if (inner_parallel) {
@@ -342,7 +340,10 @@ train_models <- function(run_info,
                 NULL
               },
               date_type = date_type,
-              fast = FALSE
+              fast = FALSE,
+              forecast_horizon = forecast_horizon,
+              external_regressors = external_regressors,
+              multistep_horizon = multistep_horizon
             )
 
           fs_list <- append(fs_list, list(R1 = R1_fs_list))
@@ -353,7 +354,7 @@ train_models <- function(run_info,
             dplyr::filter(Recipe == "R2") %>%
             dplyr::select(Data) %>%
             tidyr::unnest(Data) %>%
-            select_features(
+            run_feature_selection(
               run_info = run_info,
               train_test_data = model_train_test_tbl,
               parallel_processing = if (inner_parallel) {
@@ -362,7 +363,10 @@ train_models <- function(run_info,
                 NULL
               },
               date_type = date_type,
-              fast = FALSE
+              fast = FALSE,
+              forecast_horizon = forecast_horizon,
+              external_regressors = external_regressors,
+              multistep_horizon = FALSE
             )
 
           fs_list <- append(fs_list, list(R2 = R2_fs_list))
@@ -395,7 +399,6 @@ train_models <- function(run_info,
         .multicombine = TRUE,
         .noexport = NULL
       ) %do% {
-
         # get initial run info
         model <- model_run %>%
           dplyr::pull(Model_Name)
@@ -425,14 +428,25 @@ train_models <- function(run_info,
             final_features_list <- fs_list$R2
           }
 
-          updated_recipe <- workflow %>%
-            workflows::extract_recipe(estimated = FALSE) %>%
-            recipes::remove_role(tidyselect::everything(), old_role = "predictor") %>%
-            recipes::update_role(tidyselect::any_of(unique(c(final_features_list, "Date"))), new_role = "predictor") %>%
-            base::suppressWarnings()
+          if (multistep_horizon & data_prep_recipe == "R1" & model %in% list_multistep_models()) {
+            updated_model_spec <- workflow %>%
+              workflows::extract_spec_parsnip() %>%
+              update(selected_features = final_features_list)
 
-          empty_workflow_final <- workflow %>%
-            workflows::update_recipe(updated_recipe)
+            empty_workflow_final <- workflow %>%
+              workflows::update_model(updated_model_spec)
+          } else {
+            final_features_list <- final_features_list[[paste0("model_lag_", forecast_horizon)]]
+
+            updated_recipe <- workflow %>%
+              workflows::extract_recipe(estimated = FALSE) %>%
+              recipes::remove_role(tidyselect::everything(), old_role = "predictor") %>%
+              recipes::update_role(tidyselect::any_of(unique(c(final_features_list, "Date"))), new_role = "predictor") %>%
+              base::suppressWarnings()
+
+            empty_workflow_final <- workflow %>%
+              workflows::update_recipe(updated_recipe)
+          }
         } else {
           empty_workflow_final <- workflow
         }
@@ -463,7 +477,7 @@ train_models <- function(run_info,
           grid = hyperparameters %>% dplyr::select(-Hyperparameter_Combo),
           control = tune::control_grid(
             allow_par = inner_parallel,
-            pkgs = inner_packages,
+            pkgs = c(inner_packages, "finnts"),
             parallel_over = "everything"
           )
         ) %>%
@@ -483,6 +497,7 @@ train_models <- function(run_info,
         }
 
         finalized_workflow <- tune::finalize_workflow(empty_workflow_final, best_param)
+
         set.seed(seed)
         wflow_fit <- generics::fit(finalized_workflow, prep_data %>% tidyr::drop_na(Target)) %>%
           base::suppressMessages()
@@ -501,7 +516,9 @@ train_models <- function(run_info,
             parallel_over = "everything"
           )
         ) %>%
-          tune::collect_predictions()
+          tune::collect_predictions() %>%
+          base::suppressMessages() %>%
+          base::suppressWarnings()
 
         # finalize forecast
         final_fcst <- refit_tbl %>%
@@ -510,10 +527,6 @@ train_models <- function(run_info,
             Train_Test_ID = id
           ) %>%
           dplyr::mutate(Train_Test_ID = as.numeric(Train_Test_ID)) %>%
-          dplyr::left_join(model_train_test_tbl %>%
-            dplyr::select(Run_Type, Train_Test_ID),
-          by = "Train_Test_ID"
-          ) %>%
           dplyr::left_join(
             prep_data %>%
               dplyr::mutate(.row = dplyr::row_number()) %>%
@@ -522,6 +535,11 @@ train_models <- function(run_info,
           ) %>%
           dplyr::mutate(Hyperparameter_ID = hyperparameter_id) %>%
           dplyr::select(-.row, -.config)
+
+        # check for future forecast
+        if (as.numeric(min(unique(final_fcst$Train_Test_ID))) != 1) {
+          stop("model is missing future forecast")
+        }
 
         # undo differencing transformation
         if (stationary & model %in% list_multivariate_models()) {
@@ -635,7 +653,7 @@ train_models <- function(run_info,
         tidyr::unnest(Forecast_Tbl) %>%
         dplyr::arrange(Train_Test_ID) %>%
         tidyr::unite(col = "Model_ID", c("Model_Name", "Model_Type", "Recipe_ID"), sep = "--", remove = FALSE) %>%
-        dplyr::group_by(Combo_ID, Model_ID, Train_Test_ID) %>%
+        dplyr::group_by(Combo, Model_ID, Train_Test_ID) %>%
         dplyr::mutate(Horizon = dplyr::row_number()) %>%
         dplyr::ungroup()
 
@@ -704,12 +722,13 @@ train_models <- function(run_info,
     length()
 
   if (successful_combos != total_combos) {
-    stop(paste0(
-      "Not all time series were completed within 'train_models', expected ",
-      total_combos, " time series but only ", successful_combos,
-      " time series were ran. ", "Please run 'train_models' again."
-    ),
-    call. = FALSE
+    stop(
+      paste0(
+        "Not all time series were completed within 'train_models', expected ",
+        total_combos, " time series but only ", successful_combos,
+        " time series were ran. ", "Please run 'train_models' again."
+      ),
+      call. = FALSE
     )
   }
 
@@ -769,7 +788,6 @@ negative_fcst_adj <- function(data,
 #' @return tbl with train test splits
 #' @noRd
 create_splits <- function(data, train_test_splits) {
-
   # Create the rsplit object
   analysis_split <- function(data, train_indices, test_indices) {
     rsplit_object <- rsample::make_splits(
@@ -831,7 +849,6 @@ create_splits <- function(data, train_test_splits) {
 undifference_forecast <- function(forecast_data,
                                   recipe_data,
                                   diff_tbl) {
-
   # check if data needs to be undifferenced
   diff1 <- diff_tbl$Diff_Value1
   diff2 <- diff_tbl$Diff_Value2
@@ -848,10 +865,8 @@ undifference_forecast <- function(forecast_data,
 
   # non seasonal differencing
   if (!is.na(diff1)) {
-
     # loop through each back test split
     for (id in train_test_id) {
-
       # get specific train test split
       fcst_temp_tbl <- forecast_data %>%
         dplyr::filter(Train_Test_ID == id)
@@ -935,7 +950,6 @@ undifference_forecast <- function(forecast_data,
 undifference_recipe <- function(recipe_data,
                                 diff_tbl,
                                 hist_end_date) {
-
   # check if data needs to be undifferenced
   diff1 <- diff_tbl$Diff_Value1
   diff2 <- diff_tbl$Diff_Value2

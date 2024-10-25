@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -119,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -347,77 +354,85 @@ more control over how you use Finn.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(finnts)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> timetk<span class="sc">::</span>m4_monthly <span class="sc">%&gt;%</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="st">&quot;2013-01-01&quot;</span>, </span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                id <span class="sc">==</span> <span class="st">&quot;M2&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finnts_fcst&quot;</span>, </span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;finn_sub_component_run&quot;</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    date <span class="sc">&gt;=</span> <span class="st">&quot;2013-01-01&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    id <span class="sc">==</span> <span class="st">&quot;M2&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">Date =</span> date) <span class="sc">%&gt;%</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">as.character</span>(id))</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>run_info <span class="ot">&lt;-</span> <span class="fu">set_run_info</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">experiment_name =</span> <span class="st">&quot;finnts_fcst&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="at">run_name =</span> <span class="st">&quot;finn_sub_component_run&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="prep-the-data" class="section level2">
 <h2>Prep the Data</h2>
 <p>Clean and prepare our data before training models. We can even pull
 out our prepped data to see the features and transformations applied
 before models are trained.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">prep_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>          <span class="at">input_data =</span> hist_data, </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>          <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>), </span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>          <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>, </span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>          <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>          <span class="at">forecast_horizon =</span> <span class="dv">6</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>R1_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>                                        <span class="at">recipe =</span> <span class="st">&quot;R1&quot;</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">print</span>(R1_prepped_data_tbl)</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 36 x 66</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id      Target Date_index.num Date_diff Date_year Date_half</span></span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;  1 2013-01-01 M2    M2     722366.     1356998400         0      2013         1</span></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;  2 2013-02-01 M2    M2     722366.     1359676800   2678400      2013         1</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;  3 2013-03-01 M2    M2    -285828.     1362096000   2419200      2013         1</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;  4 2013-04-01 M2    M2     -28033.     1364774400   2678400      2013         1</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;  5 2013-05-01 M2    M2     141165.     1367366400   2592000      2013         1</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;  6 2013-06-01 M2    M2     319357.     1370044800   2678400      2013         1</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;  7 2013-07-01 M2    M2     393011.     1372636800   2592000      2013         2</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt;  8 2013-08-01 M2    M2    -740801.     1375315200   2678400      2013         2</span></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt;  9 2013-09-01 M2    M2    -704178.     1377993600   2678400      2013         2</span></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 10 2013-10-01 M2    M2     425346.     1380585600   2592000      2013         2</span></span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; # i 26 more rows</span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; # i 58 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;,</span></span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12 &lt;dbl&gt;, Target_lag6_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt; #   Target_lag9_roll3_Avg &lt;dbl&gt;, Target_lag12_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll6_Avg &lt;dbl&gt;, Target_lag9_roll6_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12_roll6_Avg &lt;dbl&gt;, Target_lag6_roll9_Avg &lt;dbl&gt;, ...</span></span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>R2_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>                                        <span class="at">recipe =</span> <span class="st">&quot;R2&quot;</span>)</span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="fu">print</span>(R2_prepped_data_tbl)</span>
-<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt; # A tibble: 216 x 133</span></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id      Target Date_index.num Date_diff Date_year Date_half</span></span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt;  1 2013-01-01 M2    M2     722366.     1356998400         0      2013         1</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt;  2 2013-02-01 M2    M2     722366.     1359676800   2678400      2013         1</span></span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt;  3 2013-03-01 M2    M2    -285828.     1362096000   2419200      2013         1</span></span>
-<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt;  4 2013-04-01 M2    M2     -28033.     1364774400   2678400      2013         1</span></span>
-<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt;  5 2013-05-01 M2    M2     141165.     1367366400   2592000      2013         1</span></span>
-<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt;  6 2013-06-01 M2    M2     319357.     1370044800   2678400      2013         1</span></span>
-<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt;  7 2013-07-01 M2    M2     393011.     1372636800   2592000      2013         2</span></span>
-<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt;  8 2013-08-01 M2    M2    -740801.     1375315200   2678400      2013         2</span></span>
-<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt;  9 2013-09-01 M2    M2    -704178.     1377993600   2678400      2013         2</span></span>
-<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; 10 2013-10-01 M2    M2     425346.     1380585600   2592000      2013         2</span></span>
-<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; # i 206 more rows</span></span>
-<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; # i 125 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
-<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Horizon &lt;dbl&gt;, Origin &lt;dbl&gt;, Target_lag1 &lt;dbl&gt;,</span></span>
-<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; #   Target_lag2 &lt;dbl&gt;, Target_lag3 &lt;dbl&gt;, Target_lag4 &lt;dbl&gt;, Target_lag5 &lt;dbl&gt;,</span></span>
-<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;, Target_lag12 &lt;dbl&gt;,</span></span>
-<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; #   Target_lag1_roll3_Avg &lt;dbl&gt;, Target_lag2_roll3_Avg &lt;dbl&gt;,</span></span>
-<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt; #   Target_lag3_roll3_Avg &lt;dbl&gt;, Target_lag4_roll3_Avg &lt;dbl&gt;, ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">prep_data</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">input_data =</span> hist_data,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">combo_variables =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">target_variable =</span> <span class="st">&quot;value&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">date_type =</span> <span class="st">&quot;month&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">forecast_horizon =</span> <span class="dv">6</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>R1_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="at">recipe =</span> <span class="st">&quot;R1&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="fu">print</span>(R1_prepped_data_tbl)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; # A tibble: 36 × 66</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id    Target Date_index.num Date_diff Date_year Date_half</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;  1 2013-01-01 M2    M2       260     1356998400         0      2013         1</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;  2 2013-02-01 M2    M2       260     1359676800   2678400      2013         1</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;  3 2013-03-01 M2    M2      -100     1362096000   2419200      2013         1</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt;  4 2013-04-01 M2    M2       -10     1364774400   2678400      2013         1</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt;  5 2013-05-01 M2    M2        50     1367366400   2592000      2013         1</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt;  6 2013-06-01 M2    M2       110     1370044800   2678400      2013         1</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt;  7 2013-07-01 M2    M2       130     1372636800   2592000      2013         2</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt;  8 2013-08-01 M2    M2      -250     1375315200   2678400      2013         2</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt;  9 2013-09-01 M2    M2      -260     1377993600   2678400      2013         2</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; 10 2013-10-01 M2    M2       160     1380585600   2592000      2013         2</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt; # ℹ 26 more rows</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; # ℹ 58 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;,</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12 &lt;dbl&gt;, Target_lag6_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; #   Target_lag9_roll3_Avg &lt;dbl&gt;, Target_lag12_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6_roll6_Avg &lt;dbl&gt;, Target_lag9_roll6_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt; #   Target_lag12_roll6_Avg &lt;dbl&gt;, Target_lag6_roll9_Avg &lt;dbl&gt;, …</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>R2_prepped_data_tbl <span class="ot">&lt;-</span> <span class="fu">get_prepped_data</span>(</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  <span class="at">recipe =</span> <span class="st">&quot;R2&quot;</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>)</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="fu">print</span>(R2_prepped_data_tbl)</span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; # A tibble: 216 × 133</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt;    Date       Combo id    Target Date_index.num Date_diff Date_year Date_half</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt;  1 2013-01-01 M2    M2       260     1356998400         0      2013         1</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt;  2 2013-02-01 M2    M2       260     1359676800   2678400      2013         1</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt;  3 2013-03-01 M2    M2      -100     1362096000   2419200      2013         1</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt;  4 2013-04-01 M2    M2       -10     1364774400   2678400      2013         1</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt;  5 2013-05-01 M2    M2        50     1367366400   2592000      2013         1</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt;  6 2013-06-01 M2    M2       110     1370044800   2678400      2013         1</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt;  7 2013-07-01 M2    M2       130     1372636800   2592000      2013         2</span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt;  8 2013-08-01 M2    M2      -250     1375315200   2678400      2013         2</span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt;  9 2013-09-01 M2    M2      -260     1377993600   2678400      2013         2</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; 10 2013-10-01 M2    M2       160     1380585600   2592000      2013         2</span></span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt; # ℹ 206 more rows</span></span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a><span class="co">#&gt; # ℹ 125 more variables: Date_quarter &lt;dbl&gt;, Date_month &lt;dbl&gt;,</span></span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a><span class="co">#&gt; #   Date_month.lbl &lt;chr&gt;, Horizon &lt;dbl&gt;, Origin &lt;dbl&gt;, Target_lag1 &lt;dbl&gt;,</span></span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a><span class="co">#&gt; #   Target_lag2 &lt;dbl&gt;, Target_lag3 &lt;dbl&gt;, Target_lag4 &lt;dbl&gt;, Target_lag5 &lt;dbl&gt;,</span></span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a><span class="co">#&gt; #   Target_lag6 &lt;dbl&gt;, Target_lag9 &lt;dbl&gt;, Target_lag12 &lt;dbl&gt;,</span></span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a><span class="co">#&gt; #   Target_lag1_roll3_Avg &lt;dbl&gt;, Target_lag2_roll3_Avg &lt;dbl&gt;,</span></span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a><span class="co">#&gt; #   Target_lag3_roll3_Avg &lt;dbl&gt;, Target_lag4_roll3_Avg &lt;dbl&gt;, …</span></span></code></pre></div>
 </div>
 <div id="train-individual-models" class="section level2">
 <h2>Train Individual Models</h2>
@@ -426,12 +441,16 @@ models. First we need to create the model workflows, determine our back
 testing process, and how many hyperparameter combinations to try during
 the validation process.</p>
 <p>Then we can kick off training each model on our data.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">prep_models</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>            <span class="at">models_to_run =</span> <span class="fu">c</span>(<span class="st">&quot;arima&quot;</span>, <span class="st">&quot;ets&quot;</span>, <span class="st">&quot;glmnet&quot;</span>), </span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>            <span class="at">num_hyperparameters =</span> <span class="dv">2</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">train_models</span>(<span class="at">run_info =</span> run_info, </span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>             <span class="at">run_global_models =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">prep_models</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">models_to_run =</span> <span class="fu">c</span>(<span class="st">&quot;arima&quot;</span>, <span class="st">&quot;ets&quot;</span>, <span class="st">&quot;glmnet&quot;</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">num_hyperparameters =</span> <span class="dv">2</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">train_models</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">run_info =</span> run_info,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="at">run_global_models =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="train-ensemble-models" class="section level2">
 <h2>Train Ensemble Models</h2>
@@ -449,27 +468,26 @@ the best models.</p>
 <h2>Get Forecast Results</h2>
 <p>Finally we can now retrieve the forecast results from this Finn
 run.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>finn_output_tbl <span class="ot">&lt;-</span> <span class="fu">get_forecast_data</span>(<span class="at">run_info =</span> run_info)</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">print</span>(finn_output_tbl)</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 390 x 17</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;    Combo id    Model_ID   Model_Name Model_Type Recipe_ID Run_Type Train_Test_ID</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;            &lt;dbl&gt;</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;  1 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Future_~             1</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;  2 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Future_~             1</span></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;  3 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Future_~             1</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;  4 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Future_~             1</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;  5 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Future_~             1</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;  6 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Future_~             1</span></span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;  7 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Back_Te~             2</span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;  8 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Back_Te~             3</span></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  9 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Back_Te~             3</span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; 10 M2    M2    arima--lo~ &lt;NA&gt;       local      simple_a~ Back_Te~             4</span></span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; # i 380 more rows</span></span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; # i 9 more variables: Best_Model &lt;chr&gt;, Horizon &lt;dbl&gt;, Date &lt;date&gt;,</span></span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; #   Target &lt;dbl&gt;, Forecast &lt;dbl&gt;, lo_95 &lt;dbl&gt;, lo_80 &lt;dbl&gt;, hi_80 &lt;dbl&gt;,</span></span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; #   hi_95 &lt;dbl&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>finn_output_tbl <span class="ot">&lt;-</span> <span class="fu">get_forecast_data</span>(<span class="at">run_info =</span> run_info)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">print</span>(finn_output_tbl)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 390 × 17</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;    Combo id    Model_ID   Model_Name Model_Type Recipe_ID Run_Type Train_Test_ID</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;            &lt;dbl&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;  1 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Future_…             1</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;  2 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Future_…             1</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;  3 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Future_…             1</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;  4 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Future_…             1</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;  5 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Future_…             1</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;  6 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Future_…             1</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;  7 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Back_Te…             2</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;  8 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Back_Te…             3</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;  9 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Back_Te…             3</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; 10 M2    M2    arima--lo… &lt;NA&gt;       local      simple_a… Back_Te…             4</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 380 more rows</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; # ℹ 9 more variables: Best_Model &lt;chr&gt;, Horizon &lt;dbl&gt;, Date &lt;date&gt;,</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; #   Target &lt;dbl&gt;, Forecast &lt;dbl&gt;, lo_95 &lt;dbl&gt;, lo_80 &lt;dbl&gt;, hi_80 &lt;dbl&gt;,</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; #   hi_95 &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 
 

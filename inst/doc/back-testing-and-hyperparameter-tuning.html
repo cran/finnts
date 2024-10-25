@@ -249,47 +249,14 @@ splits are calculated and written to disk. You can get the results by
 calling <code>get_prepped_models()</code>.</p>
 <pre><code>#&gt; Loading required package: modeltime
 #&gt; Finn Submission Info
-#&gt; * Experiment Name: finnts_fcst
-#&gt; * Run Name: get_prepped_models-20231130T175731Z
+#&gt; • Experiment Name: finnts_fcst
+#&gt; • Run Name: get_prepped_models-20241025T173115Z
 #&gt; 
-#&gt; i Prepping Data
-#&gt; Warning: package &#39;tibble&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;dplyr&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;timetk&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;forecast&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;tidyselect&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;stringr&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;doParallel&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;iterators&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;lubridate&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;dials&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;scales&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;workflows&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;Cubist&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;earth&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;glmnet&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;purrr&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;rules&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;fs&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;digest&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;tidyr&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;vroom&#39; was built under R version 4.1.3
-#&gt; Warning: package &#39;cli&#39; was built under R version 4.1.3
-#&gt; 
-v Prepping Data [5.8s]
-#&gt; 
-i Creating Model Workflows
-
-v Creating Model Workflows [538ms]
-#&gt; 
-i Creating Model Hyperparameters
-
-v Creating Model Hyperparameters [823ms]
-#&gt; 
-i Creating Train Test Splits
-
-v Creating Train Test Splits [1.5s]
-#&gt; # A tibble: 31 x 4
+#&gt; ℹ Prepping Data✔ Prepping Data [4s]
+#&gt; ℹ Creating Model Workflows✔ Creating Model Workflows [364ms]
+#&gt; ℹ Creating Model Hyperparameters✔ Creating Model Hyperparameters [426ms]
+#&gt; ℹ Creating Train Test Splits✔ Creating Train Test Splits [720ms]
+#&gt; # A tibble: 31 × 4
 #&gt;    Run_Type        Train_Test_ID Train_End  Test_End  
 #&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;date&gt;     &lt;date&gt;    
 #&gt;  1 Future_Forecast             1 2015-06-01 2015-12-01
@@ -302,29 +269,29 @@ v Creating Train Test Splits [1.5s]
 #&gt;  8 Back_Test                   8 2014-11-01 2015-05-01
 #&gt;  9 Back_Test                   9 2014-10-01 2015-04-01
 #&gt; 10 Validation                 10 2014-09-01 2014-10-01
-#&gt; # i 21 more rows
+#&gt; # ℹ 21 more rows
 #&gt; [1] &quot;Future_Forecast&quot; &quot;Back_Test&quot;       &quot;Validation&quot;      &quot;Ensemble&quot;
-#&gt; # A tibble: 3 x 3
+#&gt; # A tibble: 3 × 3
 #&gt;   Model_Name Model_Recipe Model_Workflow
 #&gt;   &lt;chr&gt;      &lt;chr&gt;        &lt;list&gt;        
 #&gt; 1 arima      R1           &lt;workflow&gt;    
 #&gt; 2 ets        R1           &lt;workflow&gt;    
 #&gt; 3 xgboost    R1           &lt;workflow&gt;
-#&gt; # A tibble: 12 x 4
+#&gt; # A tibble: 12 × 4
 #&gt;    Model   Recipe Hyperparameter_Combo Hyperparameters 
 #&gt;    &lt;chr&gt;   &lt;chr&gt;                 &lt;dbl&gt; &lt;list&gt;          
-#&gt;  1 arima   R1                        1 &lt;tibble [0 x 0]&gt;
-#&gt;  2 ets     R1                        1 &lt;tibble [0 x 0]&gt;
-#&gt;  3 xgboost R1                        1 &lt;tibble [1 x 4]&gt;
-#&gt;  4 xgboost R1                        2 &lt;tibble [1 x 4]&gt;
-#&gt;  5 xgboost R1                        3 &lt;tibble [1 x 4]&gt;
-#&gt;  6 xgboost R1                        4 &lt;tibble [1 x 4]&gt;
-#&gt;  7 xgboost R1                        5 &lt;tibble [1 x 4]&gt;
-#&gt;  8 xgboost R1                        6 &lt;tibble [1 x 4]&gt;
-#&gt;  9 xgboost R1                        7 &lt;tibble [1 x 4]&gt;
-#&gt; 10 xgboost R1                        8 &lt;tibble [1 x 4]&gt;
-#&gt; 11 xgboost R1                        9 &lt;tibble [1 x 4]&gt;
-#&gt; 12 xgboost R1                       10 &lt;tibble [1 x 4]&gt;</code></pre>
+#&gt;  1 arima   R1                        1 &lt;tibble [0 × 0]&gt;
+#&gt;  2 ets     R1                        1 &lt;tibble [0 × 0]&gt;
+#&gt;  3 xgboost R1                        1 &lt;tibble [1 × 4]&gt;
+#&gt;  4 xgboost R1                        2 &lt;tibble [1 × 4]&gt;
+#&gt;  5 xgboost R1                        3 &lt;tibble [1 × 4]&gt;
+#&gt;  6 xgboost R1                        4 &lt;tibble [1 × 4]&gt;
+#&gt;  7 xgboost R1                        5 &lt;tibble [1 × 4]&gt;
+#&gt;  8 xgboost R1                        6 &lt;tibble [1 × 4]&gt;
+#&gt;  9 xgboost R1                        7 &lt;tibble [1 × 4]&gt;
+#&gt; 10 xgboost R1                        8 &lt;tibble [1 × 4]&gt;
+#&gt; 11 xgboost R1                        9 &lt;tibble [1 × 4]&gt;
+#&gt; 12 xgboost R1                       10 &lt;tibble [1 × 4]&gt;</code></pre>
 <p>The above outputs allow a Finn user to understand what
 hyperparameters are chosen for tuning and how the model refitting
 process will work. When tuning hyperparameters, Finn uses the

@@ -1,6 +1,6 @@
 Package: finnts
 Title: Microsoft Finance Time Series Forecasting Framework
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: 
     c(person(given = "Mike",
            family = "Tokic",
@@ -23,22 +23,22 @@ URL: https://microsoft.github.io/finnts/,
 BugReports: https://github.com/microsoft/finnts/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Imports: cli, Cubist, dials, digest, doParallel, dplyr, earth, feasts,
         foreach, fs, generics, glue, glmnet, gtools, hts, kernlab,
         lubridate, magrittr, methods, parallel, parsnip, plyr, purrr,
-        recipes, rsample, rules, snakecase, stringr, tibble, tidyr,
-        tidyselect, timetk, tune, vroom, workflows
+        recipes, rlang, rsample, rules, snakecase, stringr, tibble,
+        tidyr, tidyselect, timetk, tune, vroom, workflows
 Suggests: arrow (>= 8.0.0), AzureStor, Boruta, corrr, knitr,
         Microsoft365R, notebookutils, qs, reactable, rmarkdown,
         sparklyr, testthat (>= 3.0.0), vip
 Config/testthat/edition: 3
-Depends: R (>= 3.6.0), modeltime
+Depends: R (>= 4.0), modeltime
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2023-11-30 18:00:33 UTC; mitokic
+Packaged: 2024-10-25 17:32:45 UTC; mitokic
 Author: Mike Tokic [aut, cre] (<https://orcid.org/0000-0002-7630-7055>),
   Aadharsh Kannan [aut] (<https://orcid.org/0000-0002-6475-8211>)
 Maintainer: Mike Tokic <mftokic@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-12-01 09:40:02 UTC
+Date/Publication: 2024-10-25 17:50:02 UTC
